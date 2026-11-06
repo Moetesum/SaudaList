@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 
 class NeumorphicColors {
-  static const Color background = Color(0xFFE0E5EC);
+  static const Color background = Color(0xFFF8FAFC);
+  static const Color primaryGreen = Color(0xFF22C55E);
+  static const Color accentOrange = Color(0xFFF59E0B);
+  static const Color textPrimary = Color(0xFF1F2937);
+  static const Color textSecondary = Color(0xFF6B7280);
   static const Color lightShadow = Colors.white;
-  static const Color darkShadow = Color(0xFFA3B1C6);
-  static const Color accentGreen = Color(0xFF4CAF50);
-  static const Color accentDarkGreen = Color(0xFF388E3C);
-  static const Color textPrimary = Color(0xFF2D3748);
-  static const Color textSecondary = Color(0xFF718096);
-  static const Color cardBackground = Color(0xFFE0E5EC);
+  static const Color darkShadow = Color(0xFFCBD5E1);
+  static const Color cardBackground = Color(0xFFF8FAFC);
+
+  // Backward compatibility aliases
+  static const Color accentGreen = Color(0xFF22C55E);
+  static const Color accentDarkGreen = Color(0xFF16A34A);
 }
 
 class NeumorphicStyles {
@@ -24,7 +28,7 @@ class NeumorphicStyles {
         borderRadius: BorderRadius.circular(radius),
         boxShadow: [
           BoxShadow(
-            color: NeumorphicColors.darkShadow,
+            color: NeumorphicColors.darkShadow.withValues(alpha: 0.8),
             offset: const Offset(2, 2),
             blurRadius: 5,
             spreadRadius: 1,
@@ -43,15 +47,15 @@ class NeumorphicStyles {
       borderRadius: BorderRadius.circular(radius),
       boxShadow: [
         BoxShadow(
-          color: NeumorphicColors.darkShadow,
-          offset: const Offset(6, 6),
-          blurRadius: 15,
+          color: NeumorphicColors.darkShadow.withValues(alpha: 0.7),
+          offset: const Offset(5, 5),
+          blurRadius: 12,
           spreadRadius: 1,
         ),
         BoxShadow(
           color: NeumorphicColors.lightShadow,
-          offset: const Offset(-6, -6),
-          blurRadius: 15,
+          offset: const Offset(-5, -5),
+          blurRadius: 12,
           spreadRadius: 1,
         ),
       ],
@@ -68,7 +72,7 @@ class NeumorphicStyles {
       borderRadius: BorderRadius.circular(radius),
       boxShadow: [
         BoxShadow(
-          color: NeumorphicColors.darkShadow.withOpacity(0.6),
+          color: NeumorphicColors.darkShadow.withValues(alpha: 0.6),
           offset: const Offset(3, 3),
           blurRadius: 6,
           spreadRadius: -1,
@@ -169,6 +173,7 @@ class NeumorphicTextField extends StatelessWidget {
   final IconData? prefixIcon;
   final bool obscureText;
   final TextInputType? keyboardType;
+  final ValueChanged<String>? onSubmitted;
 
   const NeumorphicTextField({
     super.key,
@@ -177,6 +182,7 @@ class NeumorphicTextField extends StatelessWidget {
     this.prefixIcon,
     this.obscureText = false,
     this.keyboardType,
+    this.onSubmitted,
   });
 
   @override
@@ -187,7 +193,7 @@ class NeumorphicTextField extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: NeumorphicColors.darkShadow.withOpacity(0.5),
+            color: NeumorphicColors.darkShadow.withValues(alpha: 0.5),
             offset: const Offset(3, 3),
             blurRadius: 6,
             spreadRadius: 1,
@@ -204,11 +210,12 @@ class NeumorphicTextField extends StatelessWidget {
         controller: controller,
         obscureText: obscureText,
         keyboardType: keyboardType,
+        onSubmitted: onSubmitted,
         style: const TextStyle(color: NeumorphicColors.textPrimary),
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: NeumorphicColors.textSecondary),
-          prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: NeumorphicColors.accentGreen) : null,
+          prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: NeumorphicColors.primaryGreen) : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),

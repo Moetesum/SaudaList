@@ -39,4 +39,27 @@ class ShoppingListModel {
       'updated_at': updatedAt.toIso8601String(),
     };
   }
+
+  int get pendingCount => items.where((item) => !item.isChecked).length;
+
+  String get statusLabel {
+    if (items.isEmpty) return 'Empty';
+    if (pendingCount == 0) return 'Done';
+    return 'Pending';
+  }
+
+  ShoppingListModel copyWith({
+    String? title,
+    DateTime? updatedAt,
+    List<ShoppingListItem>? items,
+  }) {
+    return ShoppingListModel(
+      id: id,
+      userId: userId,
+      title: title ?? this.title,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      items: items ?? this.items,
+    );
+  }
 }

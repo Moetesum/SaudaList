@@ -1,8 +1,45 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/neumorphic_theme.dart';
+import 'package:provider/provider.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
+import '../../core/theme/neumorphic_theme.dart';
+import '../../state/app_state.dart';
+
+class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
+
+  @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  void _sendReset() {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter your registered email address.')),
+      );
+      return;
+    }
+    final exists = context.read<AppState>().hasAccount(email);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          exists
+              ? 'Password reset link sent to $email'
+              : 'No account found for that email.',
+        ),
+      ),
+    );
+    if (exists) Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,19 +74,15 @@ class ForgotPasswordScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-              const NeumorphicTextField(
+              NeumorphicTextField(
+                controller: _emailController,
                 hintText: 'Email Address',
                 prefixIcon: Icons.email_rounded,
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 30),
               NeumorphicButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Password reset link sent to email!')),
-                  );
-                  Navigator.pop(context);
-                },
+                onPressed: _sendReset,
                 child: const Text(
                   'Send Reset Link',
                   style: TextStyle(

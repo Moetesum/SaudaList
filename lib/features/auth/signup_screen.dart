@@ -1,9 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../../core/theme/neumorphic_theme.dart';
 import '../../core/routing/app_router.dart';
+import '../../state/app_state.dart';
 
-class SignupScreen extends StatelessWidget {
+class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
+
+  @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _handleSignUp() {
+    final error = context.read<AppState>().signUp(
+          _nameController.text,
+          _emailController.text,
+          _passwordController.text,
+        );
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    final state = context.read<AppState>();
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      state.isAdmin ? AppRoutes.admin : AppRoutes.home,
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,25 +76,28 @@ class SignupScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              const NeumorphicTextField(
+              NeumorphicTextField(
+                controller: _nameController,
                 hintText: 'Full Name',
                 prefixIcon: Icons.person_rounded,
               ),
               const SizedBox(height: 20),
-              const NeumorphicTextField(
+              NeumorphicTextField(
+                controller: _emailController,
                 hintText: 'Email Address',
                 prefixIcon: Icons.email_rounded,
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 20),
-              const NeumorphicTextField(
+              NeumorphicTextField(
+                controller: _passwordController,
                 hintText: 'Password',
                 prefixIcon: Icons.lock_rounded,
                 obscureText: true,
               ),
               const SizedBox(height: 30),
               NeumorphicButton(
-                onPressed: () => Navigator.pushReplacementNamed(context, AppRoutes.home),
+                onPressed: _handleSignUp,
                 child: const Text(
                   'Sign Up',
                   style: TextStyle(

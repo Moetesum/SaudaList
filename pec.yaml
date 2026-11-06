@@ -1,0 +1,32 @@
+[1mdiff --git a/pubspec.yaml b/pubspec.yaml[m
+[1mindex 5c0928e..91bdf91 100644[m
+[1m--- a/pubspec.yaml[m
+[1m+++ b/pubspec.yaml[m
+[36m@@ -11,15 +11,23 @@[m [mdependencies:[m
+   flutter:[m
+     sdk: flutter[m
+   cupertino_icons: ^1.0.8[m
+[31m-  supabase_flutter: ^2.5.0[m
+[31m-  pdf: ^3.10.4[m
+[31m-  printing: ^5.13.2[m
+[32m+[m[32m  supabase_flutter: ^2.18.3[m
+[32m+[m[32m  pdf: ^3.13.1[m
+[32m+[m[32m  printing: ^5.15.1[m
+   provider: ^6.1.2[m
+[31m-[m
+ dev_dependencies:[m
+   flutter_test:[m
+     sdk: flutter[m
+   flutter_lints: ^6.0.0[m
+[32m+[m[32m  flutter_launcher_icons: ^0.13.1[m
+[32m+[m
+[32m+[m[32mflutter_launcher_icons:[m
+[32m+[m[32m  android: "ic_launcher"[m
+[32m+[m[32m  ios: true[m
+[32m+[m[32m  image_path: "assets/icon/app_icon.png"[m
+[32m+[m[32m  min_sdk_android: 21[m
+ [m
+ flutter:[m
+   uses-material-design: true[m
+[32m+[m[32m  assets:[m
+[32m+[m[32m    - assets/icon/[m

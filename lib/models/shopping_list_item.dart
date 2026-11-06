@@ -44,4 +44,21 @@ class ShoppingListItem {
       'sort_order': sortOrder,
     };
   }
+
+  ShoppingListItem copyWith({
+    double? quantity,
+    bool? isChecked,
+    int? sortOrder,
+  }) {
+    return ShoppingListItem(
+      id: id,
+      listId: listId,
+      productId: productId,
+      productName: productName,
+      quantity: quantity ?? this.quantity,
+      unit: unit,
+      isChecked: isChecked ?? this.isChecked,
+      sortOrder: sortOrder ?? this.sortOrder,
+    );
+  }
 }

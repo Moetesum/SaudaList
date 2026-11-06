@@ -1,25 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
+
 import '../../core/theme/neumorphic_theme.dart';
+import '../../models/shopping_list.dart';
+import '../../models/shopping_list_item.dart';
+import '../../services/pdf_service.dart';
+import '../../state/app_state.dart';
 
 class PdfPreviewScreen extends StatelessWidget {
-  const PdfPreviewScreen({super.key});
+  final String? listId;
+  final ShoppingListModel? shoppingList;
+
+  const PdfPreviewScreen({super.key, this.listId, this.shoppingList});
+
+  ShoppingListModel _fallbackList() => ShoppingListModel(
+        id: '1',
+        userId: '1',
+        title: 'SaudaList Grocery Invoice',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        items: [
+          ShoppingListItem(id: '1', listId: '1', productName: 'Milk', quantity: 2, unit: 'Liters', isChecked: true),
+          ShoppingListItem(id: '2', listId: '1', productName: 'Bread', quantity: 1, unit: 'Loaf', isChecked: true),
+          ShoppingListItem(id: '3', listId: '1', productName: 'Eggs', quantity: 12, unit: 'Pcs', isChecked: false),
+        ],
+      );
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AppState>();
+    final list = shoppingList ?? state.listById(listId) ?? (state.myLists.isNotEmpty ? state.myLists.first : _fallbackList());
+    final pdfService = PdfService();
+
     return Scaffold(
       backgroundColor: NeumorphicColors.background,
       appBar: AppBar(
         backgroundColor: NeumorphicColors.background,
         elevation: 0,
         iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
-        title: const Text('PDF Preview', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
+        title: Text(list.title, style: const TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.download_rounded, color: NeumorphicColors.accentGreen),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('PDF downloaded successfully!')),
-              );
+            icon: const Icon(Icons.print_rounded, color: NeumorphicColors.accentGreen),
+            onPressed: () async {
+              final pdfData = await pdfService.generateListPdf(list);
+              await pdfService.printPdf(pdfData);
             },
           ),
         ],
@@ -31,43 +57,16 @@ class PdfPreviewScreen extends StatelessWidget {
             Expanded(
               child: NeumorphicContainer(
                 radius: 12,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.picture_as_pdf_rounded, size: 80, color: NeumorphicColors.accentGreen),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'SaudaList_Grocery_Invoice.pdf',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: NeumorphicColors.textPrimary),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Page 1 of 1 • 6 Items',
-                        style: TextStyle(color: NeumorphicColors.textSecondary),
-                      ),
-                    ],
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: PdfPreview(
+                    build: (format) => pdfService.generateListPdf(list),
+                    allowPrinting: true,
+                    allowSharing: true,
+                    canChangeOrientation: false,
+                    canChangePageFormat: false,
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            NeumorphicButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Sharing PDF...')),
-                );
-              },
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.share_rounded, color: NeumorphicColors.accentGreen),
-                  SizedBox(width: 8),
-                  Text(
-                    'Share PDF',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: NeumorphicColors.accentGreen),
-                  ),
-                ],
               ),
             ),
           ],

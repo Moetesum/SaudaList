@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../../core/theme/neumorphic_theme.dart';
 import '../../core/routing/app_router.dart';
+import '../../state/app_state.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AppState>();
+    final user = state.currentUser;
+
     return Scaffold(
       backgroundColor: NeumorphicColors.background,
       appBar: AppBar(
@@ -28,26 +34,35 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Sauda User',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: NeumorphicColors.textPrimary),
+            Text(
+              user?.name ?? 'Sauda Guest',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: NeumorphicColors.textPrimary),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'user@saudalist.com',
-              style: TextStyle(color: NeumorphicColors.textSecondary),
+            Text(
+              user?.email ?? 'Not signed in',
+              style: const TextStyle(color: NeumorphicColors.textSecondary),
             ),
             const SizedBox(height: 30),
             NeumorphicContainer(
               child: Column(
                 children: [
+                  if (state.isAdmin) ...[
+                    ListTile(
+                      leading: const Icon(Icons.admin_panel_settings_rounded, color: NeumorphicColors.accentGreen),
+                      title: const Text('Admin Dashboard', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NeumorphicColors.textSecondary),
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.admin),
+                    ),
+                    const Divider(),
+                  ],
                   ListTile(
                     leading: const Icon(Icons.notifications_rounded, color: NeumorphicColors.accentGreen),
                     title: const Text('Notifications', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
                     trailing: Switch(
-                      value: true,
-                      activeColor: NeumorphicColors.accentGreen,
-                      onChanged: (val) {},
+                      value: state.notificationsEnabled,
+                      activeThumbColor: NeumorphicColors.accentGreen,
+                      onChanged: state.setNotifications,
                     ),
                   ),
                   const Divider(),
@@ -55,24 +70,38 @@ class ProfileScreen extends StatelessWidget {
                     leading: const Icon(Icons.dark_mode_rounded, color: NeumorphicColors.accentGreen),
                     title: const Text('Dark Mode', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
                     trailing: Switch(
-                      value: false,
-                      activeColor: NeumorphicColors.accentGreen,
-                      onChanged: (val) {},
+                      value: state.darkMode,
+                      activeThumbColor: NeumorphicColors.accentGreen,
+                      onChanged: state.setDarkMode,
                     ),
                   ),
                   const Divider(),
                   ListTile(
                     leading: const Icon(Icons.info_outline_rounded, color: NeumorphicColors.accentGreen),
                     title: const Text('About SaudaList', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
+                    subtitle: Text(
+                      '${state.myLists.length} lists • ${state.products.length} products',
+                      style: const TextStyle(color: NeumorphicColors.textSecondary, fontSize: 12),
+                    ),
                     trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NeumorphicColors.textSecondary),
-                    onTap: () {},
+                    onTap: () {
+                      showAboutDialog(
+                        context: context,
+                        applicationName: 'SaudaList',
+                        applicationVersion: '1.0.0',
+                        applicationLegalese: 'Shop Smart, Live Better.',
+                      );
+                    },
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 30),
             NeumorphicButton(
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false),
+              onPressed: () {
+                context.read<AppState>().logout();
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+              },
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

@@ -21,7 +21,10 @@ class MyListsScreen extends StatelessWidget {
             decoration: const InputDecoration(hintText: 'List title'),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
             TextButton(
               onPressed: () => Navigator.pop(context, controller.text.trim()),
               child: const Text('Create'),
@@ -46,7 +49,13 @@ class MyListsScreen extends StatelessWidget {
         backgroundColor: NeumorphicColors.background,
         elevation: 0,
         iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
-        title: const Text('My Shopping Lists', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'My Shopping Lists',
+          style: TextStyle(
+            color: NeumorphicColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: lists.isEmpty
           ? const Center(
@@ -65,13 +74,20 @@ class MyListsScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 14.0),
                   child: NeumorphicContainer(
                     radius: 16,
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.listDetails, arguments: list.id),
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      AppRoutes.listDetails,
+                      arguments: list.id,
+                    ),
                     child: Row(
                       children: [
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: NeumorphicStyles.raised(radius: 12),
-                          child: const Icon(Icons.list_alt_rounded, color: NeumorphicColors.accentGreen),
+                          child: const Icon(
+                            Icons.list_alt_rounded,
+                            color: NeumorphicColors.accentGreen,
+                          ),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
@@ -80,14 +96,21 @@ class MyListsScreen extends StatelessWidget {
                             children: [
                               Text(
                                 list.title,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: NeumorphicColors.textPrimary),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: NeumorphicColors.textPrimary,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 '${list.items.length} items • ${list.statusLabel}',
-                                style: const TextStyle(color: NeumorphicColors.textSecondary, fontSize: 12),
+                                style: const TextStyle(
+                                  color: NeumorphicColors.textSecondary,
+                                  fontSize: 12,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -95,7 +118,11 @@ class MyListsScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NeumorphicColors.textSecondary),
+                        const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16,
+                          color: NeumorphicColors.textSecondary,
+                        ),
                       ],
                     ),
                   ),

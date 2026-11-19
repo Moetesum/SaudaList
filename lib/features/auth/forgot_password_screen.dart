@@ -13,6 +13,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _emailController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -20,25 +21,34 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  void _sendReset() {
+  Future<void> _sendReset() async {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter your registered email address.')),
+        const SnackBar(content: Text('Enter your email address.')),
       );
       return;
     }
-    final exists = context.read<AppState>().hasAccount(email);
+
+    setState(() => _isLoading = true);
+    final error = await context.read<AppState>().resetPassword(email);
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (error != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text(
-          exists
-              ? 'Password reset link sent to $email'
-              : 'No account found for that email.',
+          'If an account exists, we sent an email with reset instructions.',
         ),
       ),
     );
-    if (exists) Navigator.pop(context);
+    Navigator.pop(context);
   }
 
   @override
@@ -49,7 +59,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         backgroundColor: NeumorphicColors.background,
         elevation: 0,
         iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
-        title: const Text('Reset Password', style: TextStyle(color: NeumorphicColors.textPrimary)),
+        title: const Text(
+          'Reset Password',
+          style: TextStyle(color: NeumorphicColors.textPrimary),
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -82,15 +95,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               const SizedBox(height: 30),
               NeumorphicButton(
-                onPressed: _sendReset,
-                child: const Text(
-                  'Send Reset Link',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: NeumorphicColors.accentGreen,
-                  ),
-                ),
+                onPressed: _isLoading ? () {} : _sendReset,
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: NeumorphicColors.primaryGreen,
+                        ),
+                      )
+                    : const Text(
+                        'Send Reset Link',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: NeumorphicColors.accentGreen,
+                        ),
+                      ),
               ),
             ],
           ),

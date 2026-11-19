@@ -9,37 +9,11 @@ import '../../state/app_state.dart';
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});
 
-  Future<void> _addCategory(BuildContext context) async {
-    final controller = TextEditingController();
-    final created = await showDialog<String>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('New Category'),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(hintText: 'Category name'),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-            TextButton(
-              onPressed: () => Navigator.pop(context, controller.text.trim()),
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
-    if (created != null && created.isNotEmpty && context.mounted) {
-      context.read<AppState>().addCategory(created);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
-    final categories = [...state.categories]..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    final categories = [...state.categories]
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
     return Scaffold(
       backgroundColor: NeumorphicColors.background,
@@ -47,65 +21,75 @@ class CategoriesScreen extends StatelessWidget {
         backgroundColor: NeumorphicColors.background,
         elevation: 0,
         iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
-        title: const Text('Categories', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
-      ),
-      floatingActionButton: state.isAdmin
-          ? FloatingActionButton(
-              backgroundColor: NeumorphicColors.accentGreen,
-              onPressed: () => _addCategory(context),
-              child: const Icon(Icons.add, color: Colors.white),
-            )
-          : null,
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16.0),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 14,
-          mainAxisSpacing: 14,
-          childAspectRatio: 0.92,
+        title: const Text(
+          'Categories',
+          style: TextStyle(
+            color: NeumorphicColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final cat = categories[index];
-          final look = CatalogLook.forCategory(cat.id);
-          return NeumorphicContainer(
-            radius: 18,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            onTap: () => Navigator.pushNamed(
-              context,
-              AppRoutes.products,
-              arguments: {'categoryId': cat.id},
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: NeumorphicStyles.raised(radius: 16),
-                  child: Icon(look.$1, size: 32, color: look.$2),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      cat.name,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                        color: NeumorphicColors.textPrimary,
-                        height: 1.2,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
       ),
+      body: categories.isEmpty
+          ? const Center(
+              child: Text(
+                'No categories found.\nCatalog loading in Phase 1b.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: NeumorphicColors.textSecondary),
+              ),
+            )
+          : GridView.builder(
+              padding: const EdgeInsets.all(16.0),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 14,
+                mainAxisSpacing: 14,
+                childAspectRatio: 0.92,
+              ),
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                final cat = categories[index];
+                final look = CatalogLook.forCategory(cat.id);
+                return NeumorphicContainer(
+                  radius: 18,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
+                  ),
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.products,
+                    arguments: {'categoryId': cat.id},
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: NeumorphicStyles.raised(radius: 16),
+                        child: Icon(look.$1, size: 32, color: look.$2),
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            cat.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: NeumorphicColors.textPrimary,
+                              height: 1.2,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }

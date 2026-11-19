@@ -15,7 +15,9 @@ class ShoppingListService {
           .eq('user_id', userId)
           .order('updated_at', ascending: false);
 
-      return (response as List).map((json) => ShoppingListModel.fromJson(json)).toList();
+      return (response as List)
+          .map((json) => ShoppingListModel.fromJson(json))
+          .toList();
     } catch (_) {
       return [];
     }

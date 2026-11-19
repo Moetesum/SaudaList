@@ -1,7 +1,9 @@
 import 'dart:typed_data';
+
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+
 import '../models/shopping_list.dart';
 
 class PdfService {
@@ -17,8 +19,20 @@ class PdfService {
             child: pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
-                pw.Text('SaudaList', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
-                pw.Text(list.title, style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                pw.Text(
+                  'SaudaList',
+                  style: pw.TextStyle(
+                    fontSize: 24,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.Text(
+                  list.title,
+                  style: pw.TextStyle(
+                    fontSize: 18,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ),
@@ -44,8 +58,6 @@ class PdfService {
   }
 
   Future<void> printPdf(Uint8List pdfData) async {
-    await Printing.layoutPdf(
-      onLayout: (PdfPageFormat format) async => pdfData,
-    );
+    await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdfData);
   }
 }

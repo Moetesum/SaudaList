@@ -3,34 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../../core/theme/neumorphic_theme.dart';
 import '../../core/routing/app_router.dart';
-import '../../models/activity_log.dart';
 import '../../state/app_state.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
-
-  String _relativeTime(DateTime at) {
-    final diff = DateTime.now().difference(at);
-    if (diff.inMinutes < 1) return 'now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    return '${diff.inDays}d ago';
-  }
-
-  IconData _iconFor(ActivityLog log) {
-    switch (log.iconName) {
-      case 'add':
-        return Icons.add_circle_outline_rounded;
-      case 'user':
-        return Icons.verified_user_rounded;
-      case 'list':
-        return Icons.format_list_bulleted_rounded;
-      case 'sync':
-        return Icons.cloud_sync_rounded;
-      default:
-        return Icons.info_outline_rounded;
-    }
-  }
 
   void _handleBack(BuildContext context) {
     if (Navigator.canPop(context)) {
@@ -43,7 +19,6 @@ class AdminDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
-    final pendingItems = state.lists.fold<int>(0, (sum, list) => sum + list.pendingCount);
 
     return PopScope(
       canPop: Navigator.canPop(context),
@@ -58,23 +33,19 @@ class AdminDashboardScreen extends StatelessWidget {
           backgroundColor: NeumorphicColors.background,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: NeumorphicColors.textPrimary),
+            icon: const Icon(
+              Icons.arrow_back_rounded,
+              color: NeumorphicColors.textPrimary,
+            ),
             onPressed: () => _handleBack(context),
           ),
           title: const Text(
             'Admin Dashboard',
-            style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh_rounded, color: NeumorphicColors.accentGreen),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Live totals: ${state.users.length} users, ${state.lists.length} lists')),
-                );
-              },
+            style: TextStyle(
+              color: NeumorphicColors.textPrimary,
+              fontWeight: FontWeight.bold,
             ),
-          ],
+          ),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
@@ -139,32 +110,32 @@ class AdminDashboardScreen extends StatelessWidget {
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
                 childAspectRatio: 1.35,
-                children: [
+                children: const [
                   _MetricCard(
                     title: 'Total Users',
-                    value: '${state.users.length}',
-                    subtitle: '${state.users.where((user) => user.isAdmin).length} admin',
+                    value: '-',
+                    subtitle: 'Coming in Phase 4',
                     icon: Icons.people_alt_rounded,
                     iconColor: NeumorphicColors.accentGreen,
                   ),
                   _MetricCard(
                     title: 'Active Lists',
-                    value: '${state.lists.length}',
-                    subtitle: '$pendingItems items pending',
+                    value: '-',
+                    subtitle: 'Coming in Phase 4',
                     icon: Icons.format_list_bulleted_rounded,
-                    iconColor: const Color(0xFF2196F3),
+                    iconColor: Color(0xFF2196F3),
                   ),
                   _MetricCard(
                     title: 'Products',
-                    value: '${state.products.length}',
-                    subtitle: 'In ${state.categories.length} Categories',
+                    value: '-',
+                    subtitle: 'Coming in Phase 4',
                     icon: Icons.shopping_bag_rounded,
-                    iconColor: const Color(0xFFFF9800),
+                    iconColor: Color(0xFFFF9800),
                   ),
-                  const _MetricCard(
+                  _MetricCard(
                     title: 'Database Status',
-                    value: 'Local',
-                    subtitle: 'In-memory catalog',
+                    value: '-',
+                    subtitle: 'Coming in Phase 4',
                     icon: Icons.cloud_done_rounded,
                     iconColor: Color(0xFF9C27B0),
                   ),
@@ -192,38 +163,44 @@ class AdminDashboardScreen extends StatelessWidget {
                     icon: Icons.manage_accounts_rounded,
                     label: 'User Management',
                     color: NeumorphicColors.accentGreen,
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.userManagement),
+                    onTap: () =>
+                        Navigator.pushNamed(context, AppRoutes.userManagement),
                   ),
                   _AdminActionTile(
                     icon: Icons.category_rounded,
                     label: 'Category Manager',
                     color: const Color(0xFF2196F3),
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.categories),
+                    onTap: () =>
+                        Navigator.pushNamed(context, AppRoutes.categories),
                   ),
                   _AdminActionTile(
                     icon: Icons.inventory_2_rounded,
                     label: 'Product Catalog',
                     color: const Color(0xFFFF9800),
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.products),
+                    onTap: () =>
+                        Navigator.pushNamed(context, AppRoutes.products),
                   ),
                   _AdminActionTile(
                     icon: Icons.insights_rounded,
                     label: 'Analytics & Logs',
                     color: const Color(0xFF9C27B0),
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.analytics),
+                    onTap: () =>
+                        Navigator.pushNamed(context, AppRoutes.analytics),
                   ),
                   _AdminActionTile(
                     icon: Icons.settings_applications_rounded,
                     label: 'System Settings',
                     color: const Color(0xFF607D8B),
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+                    onTap: () =>
+                        Navigator.pushNamed(context, AppRoutes.profile),
                   ),
                   _AdminActionTile(
                     icon: Icons.logout_rounded,
                     label: 'Logout Admin',
                     color: Colors.redAccent,
-                    onTap: () {
-                      context.read<AppState>().logout();
+                    onTap: () async {
+                      await context.read<AppState>().logout();
+                      if (!context.mounted) return;
                       Navigator.pushReplacementNamed(context, AppRoutes.login);
                     },
                   ),
@@ -239,21 +216,14 @@ class AdminDashboardScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              NeumorphicContainer(
+              const NeumorphicContainer(
                 radius: 16,
-                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14),
-                child: Column(
-                  children: [
-                    for (var i = 0; i < state.activity.take(5).length; i++) ...[
-                      if (i > 0) const Divider(height: 1),
-                      _ActivityLogTile(
-                        title: state.activity[i].title,
-                        subtitle: state.activity[i].subtitle,
-                        time: _relativeTime(state.activity[i].at),
-                        icon: _iconFor(state.activity[i]),
-                      ),
-                    ],
-                  ],
+                padding: EdgeInsets.all(16),
+                child: Center(
+                  child: Text(
+                    'Activity log coming in Phase 4',
+                    style: TextStyle(color: NeumorphicColors.textSecondary),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -371,70 +341,11 @@ class _AdminActionTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: color == Colors.redAccent ? Colors.redAccent : NeumorphicColors.textPrimary,
+                color: color == Colors.redAccent
+                    ? Colors.redAccent
+                    : NeumorphicColors.textPrimary,
               ),
               maxLines: 2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActivityLogTile extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String time;
-  final IconData icon;
-
-  const _ActivityLogTile({
-    required this.title,
-    required this.subtitle,
-    required this.time,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: NeumorphicColors.accentGreen),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: NeumorphicColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: NeumorphicColors.textSecondary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            time,
-            style: const TextStyle(
-              fontSize: 10,
-              color: NeumorphicColors.textSecondary,
             ),
           ),
         ],

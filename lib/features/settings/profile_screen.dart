@@ -19,7 +19,13 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: NeumorphicColors.background,
         elevation: 0,
         iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
-        title: const Text('Profile & Settings', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Profile & Settings',
+          style: TextStyle(
+            color: NeumorphicColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -30,13 +36,21 @@ class ProfileScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: NeumorphicStyles.raised(radius: 50),
-                child: const Icon(Icons.person_rounded, size: 60, color: NeumorphicColors.accentGreen),
+                child: const Icon(
+                  Icons.person_rounded,
+                  size: 60,
+                  color: NeumorphicColors.accentGreen,
+                ),
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              user?.name ?? 'Sauda Guest',
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: NeumorphicColors.textPrimary),
+              user?.name.isNotEmpty == true ? user!.name : 'Sauda Guest',
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: NeumorphicColors.textPrimary,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -49,16 +63,39 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   if (state.isAdmin) ...[
                     ListTile(
-                      leading: const Icon(Icons.admin_panel_settings_rounded, color: NeumorphicColors.accentGreen),
-                      title: const Text('Admin Dashboard', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
-                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NeumorphicColors.textSecondary),
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.admin),
+                      leading: const Icon(
+                        Icons.admin_panel_settings_rounded,
+                        color: NeumorphicColors.accentGreen,
+                      ),
+                      title: const Text(
+                        'Admin Dashboard',
+                        style: TextStyle(
+                          color: NeumorphicColors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      trailing: const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 16,
+                        color: NeumorphicColors.textSecondary,
+                      ),
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.admin),
                     ),
                     const Divider(),
                   ],
                   ListTile(
-                    leading: const Icon(Icons.notifications_rounded, color: NeumorphicColors.accentGreen),
-                    title: const Text('Notifications', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
+                    leading: const Icon(
+                      Icons.notifications_rounded,
+                      color: NeumorphicColors.accentGreen,
+                    ),
+                    title: const Text(
+                      'Notifications',
+                      style: TextStyle(
+                        color: NeumorphicColors.textPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     trailing: Switch(
                       value: state.notificationsEnabled,
                       activeThumbColor: NeumorphicColors.accentGreen,
@@ -67,8 +104,17 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const Divider(),
                   ListTile(
-                    leading: const Icon(Icons.dark_mode_rounded, color: NeumorphicColors.accentGreen),
-                    title: const Text('Dark Mode', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
+                    leading: const Icon(
+                      Icons.dark_mode_rounded,
+                      color: NeumorphicColors.accentGreen,
+                    ),
+                    title: const Text(
+                      'Dark Mode',
+                      style: TextStyle(
+                        color: NeumorphicColors.textPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     trailing: Switch(
                       value: state.darkMode,
                       activeThumbColor: NeumorphicColors.accentGreen,
@@ -77,13 +123,29 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const Divider(),
                   ListTile(
-                    leading: const Icon(Icons.info_outline_rounded, color: NeumorphicColors.accentGreen),
-                    title: const Text('About SaudaList', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
-                    subtitle: Text(
-                      '${state.myLists.length} lists • ${state.products.length} products',
-                      style: const TextStyle(color: NeumorphicColors.textSecondary, fontSize: 12),
+                    leading: const Icon(
+                      Icons.info_outline_rounded,
+                      color: NeumorphicColors.accentGreen,
                     ),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NeumorphicColors.textSecondary),
+                    title: const Text(
+                      'About SaudaList',
+                      style: TextStyle(
+                        color: NeumorphicColors.textPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(
+                      '${state.myLists.length} lists',
+                      style: const TextStyle(
+                        color: NeumorphicColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: NeumorphicColors.textSecondary,
+                    ),
                     onTap: () {
                       showAboutDialog(
                         context: context,
@@ -98,9 +160,14 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             NeumorphicButton(
-              onPressed: () {
-                context.read<AppState>().logout();
-                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+              onPressed: () async {
+                await context.read<AppState>().logout();
+                if (!context.mounted) return;
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.login,
+                  (route) => false,
+                );
               },
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -109,7 +176,11 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(width: 8),
                   Text(
                     'Logout',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.redAccent),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.redAccent,
+                    ),
                   ),
                 ],
               ),

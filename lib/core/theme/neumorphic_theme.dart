@@ -156,7 +156,9 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
-        padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        padding:
+            widget.padding ??
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         decoration: NeumorphicStyles.raised(
           radius: widget.radius,
           isPressed: _isPressed,
@@ -215,9 +217,14 @@ class NeumorphicTextField extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: NeumorphicColors.textSecondary),
-          prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: NeumorphicColors.primaryGreen) : null,
+          prefixIcon: prefixIcon != null
+              ? Icon(prefixIcon, color: NeumorphicColors.primaryGreen)
+              : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 16,
+          ),
         ),
       ),
     );

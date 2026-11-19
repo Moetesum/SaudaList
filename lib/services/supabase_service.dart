@@ -7,11 +7,11 @@ class SupabaseService {
 
   SupabaseClient get client => Supabase.instance.client;
 
-  Future<void> initialize({required String url, required String anonKey}) async {
-    await Supabase.initialize(
-      url: url,
-      publishableKey: anonKey,
-    );
+  Future<void> initialize({
+    required String url,
+    required String anonKey,
+  }) async {
+    await Supabase.initialize(url: url, publishableKey: anonKey);
   }
 
   User? get currentUser => client.auth.currentUser;

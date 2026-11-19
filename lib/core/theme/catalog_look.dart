@@ -17,17 +17,32 @@ class CatalogLook {
     return _styles[categoryId] ?? (Icons.category_rounded, NeumorphicColors.primaryGreen);
   }
 
-  static (IconData, Color) forProduct({required String name, required String categoryId}) {
+  static (IconData, Color) forProduct({
+    required String name,
+    required String categoryId,
+  }) {
     final lower = name.toLowerCase();
-    if (lower.contains('milk')) return (Icons.local_drink_rounded, const Color(0xFF2196F3));
-    if (lower.contains('bread')) return (Icons.bakery_dining_rounded, const Color(0xFFFF9800));
-    if (lower.contains('mango')) return (Icons.nature_rounded, const Color(0xFFFFC107));
+    if (lower.contains('milk')) {
+      return (Icons.local_drink_rounded, const Color(0xFF2196F3));
+    }
+    if (lower.contains('bread')) {
+      return (Icons.bakery_dining_rounded, const Color(0xFFFF9800));
+    }
+    if (lower.contains('mango')) {
+      return (Icons.nature_rounded, const Color(0xFFFFC107));
+    }
     if (lower.contains('spinach') || lower.contains('green')) {
       return (Icons.eco_rounded, NeumorphicColors.accentGreen);
     }
-    if (lower.contains('rice')) return (Icons.rice_bowl_rounded, const Color(0xFF795548));
-    if (lower.contains('oil')) return (Icons.opacity_rounded, const Color(0xFF9E9D24));
-    if (lower.contains('egg')) return (Icons.egg_alt_rounded, const Color(0xFFFFC107));
+    if (lower.contains('rice')) {
+      return (Icons.rice_bowl_rounded, const Color(0xFF795548));
+    }
+    if (lower.contains('oil')) {
+      return (Icons.opacity_rounded, const Color(0xFF9E9D24));
+    }
+    if (lower.contains('egg')) {
+      return (Icons.egg_alt_rounded, const Color(0xFFFFC107));
+    }
     return forCategory(categoryId);
   }
 }

@@ -25,7 +25,9 @@ class ShoppingListModel {
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       items: json['items'] != null
-          ? (json['items'] as List).map((i) => ShoppingListItem.fromJson(i)).toList()
+          ? (json['items'] as List)
+                .map((i) => ShoppingListItem.fromJson(i))
+                .toList()
           : [],
     );
   }

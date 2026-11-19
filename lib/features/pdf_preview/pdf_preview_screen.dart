@@ -15,22 +15,46 @@ class PdfPreviewScreen extends StatelessWidget {
   const PdfPreviewScreen({super.key, this.listId, this.shoppingList});
 
   ShoppingListModel _fallbackList() => ShoppingListModel(
+    id: '1',
+    userId: '1',
+    title: 'SaudaList Grocery Invoice',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+    items: [
+      ShoppingListItem(
         id: '1',
-        userId: '1',
-        title: 'SaudaList Grocery Invoice',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        items: [
-          ShoppingListItem(id: '1', listId: '1', productName: 'Milk', quantity: 2, unit: 'Liters', isChecked: true),
-          ShoppingListItem(id: '2', listId: '1', productName: 'Bread', quantity: 1, unit: 'Loaf', isChecked: true),
-          ShoppingListItem(id: '3', listId: '1', productName: 'Eggs', quantity: 12, unit: 'Pcs', isChecked: false),
-        ],
-      );
+        listId: '1',
+        productName: 'Milk',
+        quantity: 2,
+        unit: 'Liters',
+        isChecked: true,
+      ),
+      ShoppingListItem(
+        id: '2',
+        listId: '1',
+        productName: 'Bread',
+        quantity: 1,
+        unit: 'Loaf',
+        isChecked: true,
+      ),
+      ShoppingListItem(
+        id: '3',
+        listId: '1',
+        productName: 'Eggs',
+        quantity: 12,
+        unit: 'Pcs',
+        isChecked: false,
+      ),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
-    final list = shoppingList ?? state.listById(listId) ?? (state.myLists.isNotEmpty ? state.myLists.first : _fallbackList());
+    final list =
+        shoppingList ??
+        state.listById(listId) ??
+        (state.myLists.isNotEmpty ? state.myLists.first : _fallbackList());
     final pdfService = PdfService();
 
     return Scaffold(
@@ -39,10 +63,19 @@ class PdfPreviewScreen extends StatelessWidget {
         backgroundColor: NeumorphicColors.background,
         elevation: 0,
         iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
-        title: Text(list.title, style: const TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
+        title: Text(
+          list.title,
+          style: const TextStyle(
+            color: NeumorphicColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.print_rounded, color: NeumorphicColors.accentGreen),
+            icon: const Icon(
+              Icons.print_rounded,
+              color: NeumorphicColors.accentGreen,
+            ),
             onPressed: () async {
               final pdfData = await pdfService.generateListPdf(list);
               await pdfService.printPdf(pdfData);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'neumorphic_theme.dart';
 
 class SaudaListLogo extends StatelessWidget {
@@ -23,16 +24,16 @@ class SaudaListLogo extends StatelessWidget {
         radius: size * 0.28,
         backgroundColor: NeumorphicColors.background,
       ),
-      child: CustomPaint(
-        painter: _SaudaListLogoPainter(),
-      ),
+      child: CustomPaint(painter: _SaudaListLogoPainter()),
     );
 
     if (!showText) return logoIcon;
 
     final textWidget = Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: isHorizontal ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+      crossAxisAlignment: isHorizontal
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
       children: [
         RichText(
           text: TextSpan(

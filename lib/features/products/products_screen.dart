@@ -32,7 +32,11 @@ class ProductsScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Select Quantity for ${product.name}',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: NeumorphicColors.textPrimary),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: NeumorphicColors.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Row(
@@ -42,18 +46,28 @@ class ProductsScreen extends StatelessWidget {
                         onPressed: () {
                           if (quantity > 1) setSheetState(() => quantity--);
                         },
-                        child: const Icon(Icons.remove, color: NeumorphicColors.accentGreen),
+                        child: const Icon(
+                          Icons.remove,
+                          color: NeumorphicColors.accentGreen,
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
                           '$quantity',
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: NeumorphicColors.textPrimary),
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: NeumorphicColors.textPrimary,
+                          ),
                         ),
                       ),
                       NeumorphicButton(
                         onPressed: () => setSheetState(() => quantity++),
-                        child: const Icon(Icons.add, color: NeumorphicColors.accentGreen),
+                        child: const Icon(
+                          Icons.add,
+                          color: NeumorphicColors.accentGreen,
+                        ),
                       ),
                     ],
                   ),
@@ -70,12 +84,20 @@ class ProductsScreen extends StatelessWidget {
                       final listTitle = appState.ensureActiveList().title;
                       Navigator.pop(context);
                       ScaffoldMessenger.of(pageContext).showSnackBar(
-                        SnackBar(content: Text('Added $quantity ${product.name} to $listTitle')),
+                        SnackBar(
+                          content: Text(
+                            'Added $quantity ${product.name} to $listTitle',
+                          ),
+                        ),
                       );
                     },
                     child: const Text(
                       'Add to Shopping List',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: NeumorphicColors.accentGreen),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: NeumorphicColors.accentGreen,
+                      ),
                     ),
                   ),
                 ],
@@ -87,71 +109,16 @@ class ProductsScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _addProduct(BuildContext context, AppState state) async {
-    if (state.categories.isEmpty) return;
-    final nameController = TextEditingController();
-    final unitController = TextEditingController(text: 'pcs');
-    var selectedCategory = categoryId ?? state.categories.first.id;
-
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('New Product'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(hintText: 'Product name'),
-                  ),
-                  TextField(
-                    controller: unitController,
-                    decoration: const InputDecoration(hintText: 'Unit (kg, litre, packet)'),
-                  ),
-                  DropdownButton<String>(
-                    value: selectedCategory,
-                    isExpanded: true,
-                    items: state.categories
-                        .map(
-                          (category) => DropdownMenuItem(
-                            value: category.id,
-                            child: Text(category.name),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) setDialogState(() => selectedCategory = value);
-                    },
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-                TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Add')),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    if (saved == true && nameController.text.trim().isNotEmpty && context.mounted) {
-      context.read<AppState>().addCatalogProduct(
-            name: nameController.text,
-            categoryId: selectedCategory,
-            unit: unitController.text,
-          );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
-    final products = state.catalog(categoryId: categoryId, searchQuery: searchQuery);
-    final categoryName = categoryId == null ? null : state.categoryById(categoryId!)?.name;
+    final products = state.catalog(
+      categoryId: categoryId,
+      searchQuery: searchQuery,
+    );
+    final categoryName = categoryId == null
+        ? null
+        : state.categoryById(categoryId!)?.name;
 
     return Scaffold(
       backgroundColor: NeumorphicColors.background,
@@ -160,27 +127,36 @@ class ProductsScreen extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
         title: Text(
-          categoryName ?? (searchQuery?.isNotEmpty == true ? 'Search results' : 'Products Catalog'),
-          style: const TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold),
+          categoryName ??
+              (searchQuery?.isNotEmpty == true
+                  ? 'Search results'
+                  : 'Products Catalog'),
+          style: const TextStyle(
+            color: NeumorphicColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-      floatingActionButton: state.isAdmin
-          ? FloatingActionButton(
-              backgroundColor: NeumorphicColors.accentGreen,
-              onPressed: () => _addProduct(context, state),
-              child: const Icon(Icons.add, color: Colors.white),
-            )
-          : null,
       body: products.isEmpty
           ? const Center(
-              child: Text('No products found.', style: TextStyle(color: NeumorphicColors.textSecondary)),
+              child: Text(
+                'No products found.\nCatalog loading in Phase 1b.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: NeumorphicColors.textSecondary),
+              ),
             )
           : ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12.0,
+              ),
               itemCount: products.length,
               itemBuilder: (context, index) {
                 final item = products[index];
-                final look = CatalogLook.forProduct(name: item.name, categoryId: item.categoryId);
+                final look = CatalogLook.forProduct(
+                  name: item.name,
+                  categoryId: item.categoryId,
+                );
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 14.0),
                   child: NeumorphicContainer(
@@ -226,7 +202,11 @@ class ProductsScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: NeumorphicStyles.raised(radius: 10),
-                          child: const Icon(Icons.add_shopping_cart_rounded, color: NeumorphicColors.accentGreen, size: 20),
+                          child: const Icon(
+                            Icons.add_shopping_cart_rounded,
+                            color: NeumorphicColors.accentGreen,
+                            size: 20,
+                          ),
                         ),
                       ],
                     ),

@@ -16,6 +16,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -25,17 +26,36 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void _handleSignUp() {
-    final error = context.read<AppState>().signUp(
-          _nameController.text,
-          _emailController.text,
-          _passwordController.text,
-        );
+  Future<void> _handleSignUp() async {
+    setState(() => _isLoading = true);
+    final error = await context.read<AppState>().signUp(
+      _nameController.text,
+      _emailController.text,
+      _passwordController.text,
+    );
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error)));
       return;
     }
+
     final state = context.read<AppState>();
+    if (!state.isAuthenticated) {
+      // Email confirmation is enabled in Supabase
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Account created! Please check your email to confirm before signing in.',
+          ),
+        ),
+      );
+      Navigator.pop(context);
+      return;
+    }
+
     Navigator.pushNamedAndRemoveUntil(
       context,
       state.isAdmin ? AppRoutes.admin : AppRoutes.home,
@@ -51,7 +71,10 @@ class _SignupScreenState extends State<SignupScreen> {
         backgroundColor: NeumorphicColors.background,
         elevation: 0,
         iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
-        title: const Text('Create Account', style: TextStyle(color: NeumorphicColors.textPrimary)),
+        title: const Text(
+          'Create Account',
+          style: TextStyle(color: NeumorphicColors.textPrimary),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -91,21 +114,30 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 20),
               NeumorphicTextField(
                 controller: _passwordController,
-                hintText: 'Password',
+                hintText: 'Password (min 6 chars)',
                 prefixIcon: Icons.lock_rounded,
                 obscureText: true,
               ),
               const SizedBox(height: 30),
               NeumorphicButton(
-                onPressed: _handleSignUp,
-                child: const Text(
-                  'Sign Up',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: NeumorphicColors.accentGreen,
-                  ),
-                ),
+                onPressed: _isLoading ? () {} : _handleSignUp,
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: NeumorphicColors.primaryGreen,
+                        ),
+                      )
+                    : const Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: NeumorphicColors.accentGreen,
+                        ),
+                      ),
               ),
               const SizedBox(height: 20),
               Center(

@@ -22,7 +22,9 @@ class Category {
       imagePath: json['image_path'] as String?,
       sortOrder: json['sort_order'] as int? ?? 0,
       isActive: json['is_active'] as bool? ?? true,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
     );
   }
 

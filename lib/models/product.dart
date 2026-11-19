@@ -25,7 +25,9 @@ class Product {
       defaultUnit: json['default_unit'] as String,
       imagePath: json['image_path'] as String?,
       isActive: json['is_active'] as bool? ?? true,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
     );
   }
 

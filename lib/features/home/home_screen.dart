@@ -56,7 +56,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_rounded, color: NeumorphicColors.primaryGreen, size: 28),
+            icon: const Icon(
+              Icons.person_rounded,
+              color: NeumorphicColors.primaryGreen,
+              size: 28,
+            ),
             onPressed: () => Navigator.pushNamed(context, AppRoutes.profile),
           ),
         ],
@@ -124,12 +128,24 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Expanded(
                   child: NeumorphicButton(
-                    onPressed: () => Navigator.pushNamed(context, AppRoutes.myLists),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.myLists),
                     child: const Column(
                       children: [
-                        Icon(Icons.shopping_cart_rounded, size: 28, color: NeumorphicColors.primaryGreen),
+                        Icon(
+                          Icons.shopping_cart_rounded,
+                          size: 28,
+                          color: NeumorphicColors.primaryGreen,
+                        ),
                         SizedBox(height: 6),
-                        Text('My List', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: NeumorphicColors.textPrimary)),
+                        Text(
+                          'My List',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: NeumorphicColors.textPrimary,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -137,12 +153,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: NeumorphicButton(
-                    onPressed: () => Navigator.pushNamed(context, AppRoutes.categories),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.categories),
                     child: const Column(
                       children: [
-                        Icon(Icons.grid_view_rounded, size: 28, color: NeumorphicColors.accentOrange),
+                        Icon(
+                          Icons.grid_view_rounded,
+                          size: 28,
+                          color: NeumorphicColors.accentOrange,
+                        ),
                         SizedBox(height: 6),
-                        Text('Categories', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: NeumorphicColors.textPrimary)),
+                        Text(
+                          'Categories',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: NeumorphicColors.textPrimary,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -150,12 +178,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: NeumorphicButton(
-                    onPressed: () => Navigator.pushNamed(context, AppRoutes.products),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.products),
                     child: const Column(
                       children: [
-                        Icon(Icons.history_rounded, size: 28, color: Color(0xFF3B82F6)),
+                        Icon(
+                          Icons.history_rounded,
+                          size: 28,
+                          color: Color(0xFF3B82F6),
+                        ),
                         SizedBox(height: 6),
-                        Text('Products', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: NeumorphicColors.textPrimary)),
+                        Text(
+                          'Products',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: NeumorphicColors.textPrimary,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -163,12 +203,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: NeumorphicButton(
-                    onPressed: () => Navigator.pushNamed(context, AppRoutes.profile),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.profile),
                     child: const Column(
                       children: [
-                        Icon(Icons.settings_rounded, size: 28, color: Color(0xFF8B5CF6)),
+                        Icon(
+                          Icons.settings_rounded,
+                          size: 28,
+                          color: Color(0xFF8B5CF6),
+                        ),
                         SizedBox(height: 6),
-                        Text('Settings', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: NeumorphicColors.textPrimary)),
+                        Text(
+                          'Settings',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: NeumorphicColors.textPrimary,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -178,7 +230,11 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 28),
             const Text(
               'Recent Active Lists',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: NeumorphicColors.textPrimary),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: NeumorphicColors.textPrimary,
+              ),
             ),
             const SizedBox(height: 14),
             if (lists.isEmpty)
@@ -199,13 +255,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.only(bottom: 14.0),
                     child: NeumorphicContainer(
                       radius: 16,
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.listDetails, arguments: list.id),
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.listDetails,
+                        arguments: list.id,
+                      ),
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: NeumorphicStyles.raised(radius: 12),
-                            child: const Icon(Icons.receipt_long_rounded, color: NeumorphicColors.primaryGreen),
+                            child: const Icon(
+                              Icons.receipt_long_rounded,
+                              color: NeumorphicColors.primaryGreen,
+                            ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -214,14 +277,21 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Text(
                                   list.title,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: NeumorphicColors.textPrimary),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: NeumorphicColors.textPrimary,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   '${list.items.length} items • ${list.statusLabel}',
-                                  style: const TextStyle(color: NeumorphicColors.textSecondary, fontSize: 12),
+                                  style: const TextStyle(
+                                    color: NeumorphicColors.textSecondary,
+                                    fontSize: 12,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -229,7 +299,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: NeumorphicColors.textSecondary),
+                          const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 16,
+                            color: NeumorphicColors.textSecondary,
+                          ),
                         ],
                       ),
                     ),

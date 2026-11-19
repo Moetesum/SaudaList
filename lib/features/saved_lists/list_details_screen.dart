@@ -13,7 +13,9 @@ class ListDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
-    final list = state.listById(listId) ?? (state.myLists.isEmpty ? null : state.myLists.first);
+    final list =
+        state.listById(listId) ??
+        (state.myLists.isEmpty ? null : state.myLists.first);
 
     if (list == null) {
       return Scaffold(
@@ -22,10 +24,19 @@ class ListDetailsScreen extends StatelessWidget {
           backgroundColor: NeumorphicColors.background,
           elevation: 0,
           iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
-          title: const Text('List Details', style: TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
+          title: const Text(
+            'List Details',
+            style: TextStyle(
+              color: NeumorphicColors.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         body: const Center(
-          child: Text('List not found.', style: TextStyle(color: NeumorphicColors.textSecondary)),
+          child: Text(
+            'List not found.',
+            style: TextStyle(color: NeumorphicColors.textSecondary),
+          ),
         ),
       );
     }
@@ -36,11 +47,24 @@ class ListDetailsScreen extends StatelessWidget {
         backgroundColor: NeumorphicColors.background,
         elevation: 0,
         iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
-        title: Text(list.title, style: const TextStyle(color: NeumorphicColors.textPrimary, fontWeight: FontWeight.bold)),
+        title: Text(
+          list.title,
+          style: const TextStyle(
+            color: NeumorphicColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.picture_as_pdf_rounded, color: NeumorphicColors.accentGreen),
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.pdfPreview, arguments: list.id),
+            icon: const Icon(
+              Icons.picture_as_pdf_rounded,
+              color: NeumorphicColors.accentGreen,
+            ),
+            onPressed: () => Navigator.pushNamed(
+              context,
+              AppRoutes.pdfPreview,
+              arguments: list.id,
+            ),
           ),
         ],
       ),
@@ -62,7 +86,10 @@ class ListDetailsScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 14.0),
                   child: NeumorphicContainer(
                     radius: 16,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     child: Row(
                       children: [
                         Checkbox(
@@ -81,7 +108,9 @@ class ListDetailsScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
                                   color: NeumorphicColors.textPrimary,
-                                  decoration: item.isChecked ? TextDecoration.lineThrough : null,
+                                  decoration: item.isChecked
+                                      ? TextDecoration.lineThrough
+                                      : null,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -89,7 +118,10 @@ class ListDetailsScreen extends StatelessWidget {
                               const SizedBox(height: 2),
                               Text(
                                 'Qty: ${item.quantity} ${item.unit} • $categoryName',
-                                style: const TextStyle(color: NeumorphicColors.textSecondary, fontSize: 12),
+                                style: const TextStyle(
+                                  color: NeumorphicColors.textSecondary,
+                                  fontSize: 12,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -97,7 +129,11 @@ class ListDetailsScreen extends StatelessWidget {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
+                          icon: const Icon(
+                            Icons.delete_outline_rounded,
+                            color: Colors.redAccent,
+                            size: 22,
+                          ),
                           onPressed: () => state.deleteItem(list.id, item.id),
                         ),
                       ],

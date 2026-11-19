@@ -12,6 +12,11 @@ class SaudaListApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
+    String initialRoute = AppRoutes.login;
+    if (appState.isAuthenticated) {
+      initialRoute = appState.isAdmin ? AppRoutes.admin : AppRoutes.home;
+    }
+
     return MaterialApp(
       title: 'SaudaList',
       debugShowCheckedModeBanner: false,
@@ -35,7 +40,7 @@ class SaudaListApp extends StatelessWidget {
           primary: NeumorphicColors.accentGreen,
         ),
       ),
-      initialRoute: AppRoutes.login,
+      initialRoute: initialRoute,
       onGenerateRoute: AppRoutes.generateRoute,
     );
   }

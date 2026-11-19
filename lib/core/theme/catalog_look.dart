@@ -1,25 +1,47 @@
 import 'package:flutter/material.dart';
+
 import 'neumorphic_theme.dart';
 
 class CatalogLook {
-  static const _styles = <String, (IconData, Color)>{
-    '1': (Icons.eco_rounded, Color(0xFF4CAF50)),
-    '2': (Icons.egg_alt_rounded, Color(0xFFFF9800)),
-    '3': (Icons.fastfood_rounded, Color(0xFFE91E63)),
-    '4': (Icons.local_drink_rounded, Color(0xFF00BCD4)),
-    '5': (Icons.ac_unit_rounded, Color(0xFF3F51B5)),
-    '6': (Icons.local_cafe_rounded, Color(0xFF795548)),
-    '7': (Icons.bakery_dining_rounded, Color(0xFFFF5722)),
-    '8': (Icons.grain_rounded, Color(0xFF8BC34A)),
-  };
-
-  static (IconData, Color) forCategory(String categoryId) {
-    return _styles[categoryId] ?? (Icons.category_rounded, NeumorphicColors.primaryGreen);
+  static (IconData, Color) forCategory(String categoryName) {
+    final lower = categoryName.toLowerCase();
+    if (lower.contains('fruit') || lower.contains('veg')) {
+      return (Icons.eco_rounded, const Color(0xFF4CAF50));
+    }
+    if (lower.contains('dairy') || lower.contains('breakfast')) {
+      return (Icons.egg_alt_rounded, const Color(0xFFFF9800));
+    }
+    if (lower.contains('snack') || lower.contains('munchie')) {
+      return (Icons.fastfood_rounded, const Color(0xFFE91E63));
+    }
+    if (lower.contains('drink') ||
+        lower.contains('juice') ||
+        lower.contains('cold')) {
+      return (Icons.local_drink_rounded, const Color(0xFF00BCD4));
+    }
+    if (lower.contains('frozen') || lower.contains('instant')) {
+      return (Icons.ac_unit_rounded, const Color(0xFF3F51B5));
+    }
+    if (lower.contains('tea') ||
+        lower.contains('coffee') ||
+        lower.contains('health')) {
+      return (Icons.local_cafe_rounded, const Color(0xFF795548));
+    }
+    if (lower.contains('bakery') || lower.contains('biscuit')) {
+      return (Icons.bakery_dining_rounded, const Color(0xFFFF5722));
+    }
+    if (lower.contains('rice') ||
+        lower.contains('atta') ||
+        lower.contains('dal') ||
+        lower.contains('grain')) {
+      return (Icons.grain_rounded, const Color(0xFF8BC34A));
+    }
+    return (Icons.category_rounded, NeumorphicColors.primaryGreen);
   }
 
   static (IconData, Color) forProduct({
     required String name,
-    required String categoryId,
+    required String categoryName,
   }) {
     final lower = name.toLowerCase();
     if (lower.contains('milk')) {
@@ -43,6 +65,6 @@ class CatalogLook {
     if (lower.contains('egg')) {
       return (Icons.egg_alt_rounded, const Color(0xFFFFC107));
     }
-    return forCategory(categoryId);
+    return forCategory(categoryName);
   }
 }

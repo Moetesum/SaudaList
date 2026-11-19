@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -6,11 +8,47 @@ import '../../core/theme/neumorphic_theme.dart';
 import '../../models/product.dart';
 import '../../state/app_state.dart';
 
-class ProductsScreen extends StatelessWidget {
+class ProductsScreen extends StatefulWidget {
   final String? categoryId;
   final String? searchQuery;
 
   const ProductsScreen({super.key, this.categoryId, this.searchQuery});
+
+  @override
+  State<ProductsScreen> createState() => _ProductsScreenState();
+}
+
+class _ProductsScreenState extends State<ProductsScreen> {
+  late TextEditingController _searchController;
+  Timer? _debounce;
+  String? _selectedCategoryId;
+  String _searchQueryText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategoryId = widget.categoryId;
+    _searchQueryText = widget.searchQuery ?? '';
+    _searchController = TextEditingController(text: _searchQueryText);
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        setState(() {
+          _searchQueryText = query;
+        });
+      }
+    });
+  }
 
   void _showQuantitySheet(BuildContext context, Product product) {
     var quantity = 1;
@@ -112,13 +150,19 @@ class ProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
+    final categories = state.categories;
     final products = state.catalog(
-      categoryId: categoryId,
-      searchQuery: searchQuery,
+      categoryId: _selectedCategoryId,
+      searchQuery: _searchQueryText,
     );
-    final categoryName = categoryId == null
-        ? null
-        : state.categoryById(categoryId!)?.name;
+
+    String appBarTitle = 'Products Catalog';
+    if (_selectedCategoryId != null) {
+      appBarTitle =
+          state.categoryById(_selectedCategoryId!)?.name ?? 'Products';
+    } else if (_searchQueryText.isNotEmpty) {
+      appBarTitle = 'Search: $_searchQueryText';
+    }
 
     return Scaffold(
       backgroundColor: NeumorphicColors.background,
@@ -127,35 +171,131 @@ class ProductsScreen extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: NeumorphicColors.textPrimary),
         title: Text(
-          categoryName ??
-              (searchQuery?.isNotEmpty == true
-                  ? 'Search results'
-                  : 'Products Catalog'),
+          appBarTitle,
           style: const TextStyle(
             color: NeumorphicColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      body: products.isEmpty
-          ? const Center(
-              child: Text(
-                'No products found.\nCatalog loading in Phase 1b.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: NeumorphicColors.textSecondary),
+      body: RefreshIndicator(
+        color: NeumorphicColors.accentGreen,
+        onRefresh: () => state.loadCatalog(),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          children: [
+            NeumorphicTextField(
+              controller: _searchController,
+              hintText: 'Search products...',
+              prefixIcon: Icons.search_rounded,
+              onSubmitted: (_) {},
+              onChanged: _onSearchChanged,
+            ),
+            const SizedBox(height: 14),
+            SizedBox(
+              height: 42,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: ChoiceChip(
+                      label: const Text('All'),
+                      selected: _selectedCategoryId == null,
+                      onSelected: (selected) {
+                        setState(() => _selectedCategoryId = null);
+                      },
+                      selectedColor: NeumorphicColors.accentGreen.withValues(
+                        alpha: 0.2,
+                      ),
+                    ),
+                  ),
+                  for (final cat in categories)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: ChoiceChip(
+                        label: Text(cat.name),
+                        selected: _selectedCategoryId == cat.id,
+                        onSelected: (selected) {
+                          setState(
+                            () =>
+                                _selectedCategoryId = selected ? cat.id : null,
+                          );
+                        },
+                        selectedColor: NeumorphicColors.accentGreen.withValues(
+                          alpha: 0.2,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 12.0,
-              ),
-              itemCount: products.length,
-              itemBuilder: (context, index) {
+            ),
+            const SizedBox(height: 14),
+            if (state.isLoadingCatalog && state.products.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: 100),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: NeumorphicColors.accentGreen,
+                  ),
+                ),
+              )
+            else if (state.catalogError != null && state.products.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 100),
+                child: Column(
+                  children: [
+                    Text(
+                      state.catalogError!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    NeumorphicButton(
+                      onPressed: () => state.loadCatalog(),
+                      child: const Text(
+                        'Retry',
+                        style: TextStyle(
+                          color: NeumorphicColors.accentGreen,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else if (state.products.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: 100),
+                child: Center(
+                  child: Text(
+                    'No products in catalog.',
+                    style: TextStyle(color: NeumorphicColors.textSecondary),
+                  ),
+                ),
+              )
+            else if (products.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: 100),
+                child: Center(
+                  child: Text(
+                    'No products match your search or filter.',
+                    style: TextStyle(color: NeumorphicColors.textSecondary),
+                  ),
+                ),
+              )
+            else
+              ...List.generate(products.length, (index) {
                 final item = products[index];
+                final categoryName =
+                    state.categoryById(item.categoryId)?.name ?? 'Groceries';
                 final look = CatalogLook.forProduct(
                   name: item.name,
-                  categoryId: item.categoryId,
+                  categoryName: categoryName,
                 );
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 14.0),
@@ -212,8 +352,10 @@ class ProductsScreen extends StatelessWidget {
                     ),
                   ),
                 );
-              },
-            ),
+              }),
+          ],
+        ),
+      ),
     );
   }
 }

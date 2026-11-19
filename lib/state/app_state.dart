@@ -1,31 +1,45 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-import '../models/activity_log.dart';
+import 'package:flutter/foundation.dart';
+
 import '../models/app_user.dart';
-import '../models/category.dart';
+import '../models/category.dart' as model;
 import '../models/product.dart';
 import '../models/shopping_list.dart';
 import '../models/shopping_list_item.dart';
 import '../services/auth_service.dart';
+import '../services/category_service.dart';
+import '../services/product_service.dart';
 
 class AppState extends ChangeNotifier {
   final AuthService _authService;
+  final CategoryService _categoryService;
+  final ProductService _productService;
 
-  AppState({AuthService? authService})
-    : _authService = authService ?? SupabaseAuthService();
+  AppState({
+    AuthService? authService,
+    CategoryService? categoryService,
+    ProductService? productService,
+  }) : _authService = authService ?? SupabaseAuthService(),
+       _categoryService = categoryService ?? CategoryService(),
+       _productService = productService ?? ProductService();
 
   AppUser? currentUser;
   bool darkMode = false;
   bool notificationsEnabled = true;
   String? errorMessage;
 
-  final List<AppUser> users = [];
-  final List<Category> categories = [];
+  bool isLoadingCatalog = false;
+  String? catalogError;
+
+  final List<model.Category> categories = [];
   final List<Product> products = [];
   final List<ShoppingListModel> lists = [];
-  final List<ActivityLog> activity = [];
 
   String? activeListId;
+
+  Future<void>? _catalogLoadFuture;
+  int _catalogRequestId = 0;
 
   bool get isAuthenticated => currentUser != null;
   bool get isAdmin => currentUser?.isAdmin ?? false;
@@ -34,11 +48,67 @@ class AppState extends ChangeNotifier {
     try {
       errorMessage = null;
       currentUser = await _authService.getCurrentUser();
+      if (currentUser != null) {
+        loadCatalog(); // Unawaited per requirements
+      }
     } catch (e) {
-      errorMessage = e.toString();
+      errorMessage = e is AuthFailure
+          ? e.message
+          : 'Could not authenticate session.';
       currentUser = null;
     }
     notifyListeners();
+  }
+
+  Future<void> loadCatalog() {
+    if (currentUser == null) return Future.value();
+    if (_catalogLoadFuture != null) return _catalogLoadFuture!;
+
+    final requestId = ++_catalogRequestId;
+    isLoadingCatalog = true;
+    catalogError = null;
+    notifyListeners();
+
+    final completer = Completer<void>();
+    _catalogLoadFuture = completer.future;
+
+    _loadCatalogTask(requestId, completer);
+
+    return _catalogLoadFuture!;
+  }
+
+  Future<void> _loadCatalogTask(
+    int requestId,
+    Completer<void> completer,
+  ) async {
+    try {
+      final fetchedCategories = await _categoryService.getActiveCategories();
+      final fetchedProducts = await _productService.getActiveProducts();
+
+      if (requestId == _catalogRequestId && currentUser != null) {
+        categories
+          ..clear()
+          ..addAll(fetchedCategories);
+        products
+          ..clear()
+          ..addAll(fetchedProducts);
+        catalogError = null;
+      }
+    } catch (e, st) {
+      debugPrint('Catalog load error: $e\n$st');
+      if (requestId == _catalogRequestId && currentUser != null) {
+        catalogError = 'Could not load the catalog. Please try again.';
+      }
+    } finally {
+      if (requestId == _catalogRequestId) {
+        isLoadingCatalog = false;
+        _catalogLoadFuture = null;
+      }
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+      notifyListeners();
+    }
   }
 
   List<ShoppingListModel> listsForUser(String userId) {
@@ -59,7 +129,7 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  Category? categoryById(String id) {
+  model.Category? categoryById(String id) {
     try {
       return categories.firstWhere((category) => category.id == id);
     } catch (_) {
@@ -95,10 +165,15 @@ class AppState extends ChangeNotifier {
     try {
       errorMessage = null;
       currentUser = await _authService.signIn(email: email, password: password);
+      if (currentUser != null) {
+        loadCatalog(); // Unawaited
+      }
       notifyListeners();
       return null;
     } catch (e) {
-      errorMessage = e.toString().replaceFirst('Exception: ', '');
+      errorMessage = e is AuthFailure
+          ? e.message
+          : 'Sign in failed. Please try again.';
       notifyListeners();
       return errorMessage;
     }
@@ -116,22 +191,33 @@ class AppState extends ChangeNotifier {
         email: email,
         password: password,
       );
+      if (currentUser != null) {
+        loadCatalog(); // Unawaited
+      }
       notifyListeners();
       return null;
     } catch (e) {
-      errorMessage = e.toString().replaceFirst('Exception: ', '');
+      errorMessage = e is AuthFailure
+          ? e.message
+          : 'Sign up failed. Please try again.';
       notifyListeners();
       return errorMessage;
     }
   }
 
   Future<void> logout() async {
+    _catalogRequestId++; // Invalidate pending catalog requests
+    _catalogLoadFuture = null;
     try {
       await _authService.signOut();
     } catch (_) {}
     currentUser = null;
+    categories.clear();
+    products.clear();
     lists.clear();
     activeListId = null;
+    isLoadingCatalog = false;
+    catalogError = null;
     notifyListeners();
   }
 
@@ -141,7 +227,7 @@ class AppState extends ChangeNotifier {
       await _authService.resetPassword(email: email);
       return null;
     } catch (e) {
-      return e.toString().replaceFirst('Exception: ', '');
+      return e is AuthFailure ? e.message : 'Could not send reset email.';
     }
   }
 

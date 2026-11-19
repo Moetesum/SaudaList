@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/app_user.dart';
@@ -33,10 +37,24 @@ class SupabaseAuthService implements AuthService {
       rethrow;
     } on AuthException catch (e) {
       throw AuthFailure(e.message);
-    } catch (_) {
+    } on PostgrestException catch (e, st) {
+      debugPrint('PostgrestException: $e\n$st');
+      throw const AuthFailure(
+        'Could not load your account data. Try again or contact the admin.',
+      );
+    } on SocketException catch (e, st) {
+      debugPrint('SocketException: $e\n$st');
       throw const AuthFailure(
         'Could not reach the server. Check your internet and try again.',
       );
+    } on TimeoutException catch (e, st) {
+      debugPrint('TimeoutException: $e\n$st');
+      throw const AuthFailure(
+        'Could not reach the server. Check your internet and try again.',
+      );
+    } catch (e, st) {
+      debugPrint('Unexpected auth error: $e\n$st');
+      throw const AuthFailure('Something went wrong. Please try again.');
     }
   }
 

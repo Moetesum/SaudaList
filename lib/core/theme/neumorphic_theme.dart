@@ -176,6 +176,7 @@ class NeumorphicTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType? keyboardType;
   final ValueChanged<String>? onSubmitted;
+  final ValueChanged<String>? onChanged;
 
   const NeumorphicTextField({
     super.key,
@@ -185,6 +186,7 @@ class NeumorphicTextField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType,
     this.onSubmitted,
+    this.onChanged,
   });
 
   @override
@@ -213,6 +215,7 @@ class NeumorphicTextField extends StatelessWidget {
         obscureText: obscureText,
         keyboardType: keyboardType,
         onSubmitted: onSubmitted,
+        onChanged: onChanged,
         style: const TextStyle(color: NeumorphicColors.textPrimary),
         decoration: InputDecoration(
           hintText: hintText,

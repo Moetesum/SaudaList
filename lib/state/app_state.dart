@@ -82,8 +82,12 @@ class AppState extends ChangeNotifier {
     Completer<void> completer,
   ) async {
     try {
-      final fetchedCategories = await _categoryService.getActiveCategories();
-      final fetchedProducts = await _productService.getActiveProducts();
+      final results = await Future.wait([
+        _categoryService.getActiveCategories(),
+        _productService.getActiveProducts(),
+      ]);
+      final fetchedCategories = results[0] as List<model.Category>;
+      final fetchedProducts = results[1] as List<Product>;
 
       if (requestId == _catalogRequestId && currentUser != null) {
         categories

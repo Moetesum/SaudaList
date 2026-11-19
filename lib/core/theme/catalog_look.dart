@@ -5,6 +5,11 @@ import 'neumorphic_theme.dart';
 class CatalogLook {
   static (IconData, Color) forCategory(String categoryName) {
     final lower = categoryName.toLowerCase();
+    if (lower.contains('tea') ||
+        lower.contains('coffee') ||
+        lower.contains('health')) {
+      return (Icons.local_cafe_rounded, const Color(0xFF795548));
+    }
     if (lower.contains('fruit') || lower.contains('veg')) {
       return (Icons.eco_rounded, const Color(0xFF4CAF50));
     }
@@ -21,11 +26,6 @@ class CatalogLook {
     }
     if (lower.contains('frozen') || lower.contains('instant')) {
       return (Icons.ac_unit_rounded, const Color(0xFF3F51B5));
-    }
-    if (lower.contains('tea') ||
-        lower.contains('coffee') ||
-        lower.contains('health')) {
-      return (Icons.local_cafe_rounded, const Color(0xFF795548));
     }
     if (lower.contains('bakery') || lower.contains('biscuit')) {
       return (Icons.bakery_dining_rounded, const Color(0xFFFF5722));

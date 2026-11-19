@@ -180,7 +180,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
       ),
       body: RefreshIndicator(
         color: NeumorphicColors.accentGreen,
-        onRefresh: () => state.loadCatalog(),
+        onRefresh: () async {
+          await state.loadCatalog();
+          if (!context.mounted) return;
+          if (state.catalogError != null) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.catalogError!)));
+          }
+        },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),

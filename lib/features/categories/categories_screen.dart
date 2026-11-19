@@ -31,7 +31,14 @@ class CategoriesScreen extends StatelessWidget {
       ),
       body: RefreshIndicator(
         color: NeumorphicColors.accentGreen,
-        onRefresh: () => state.loadCatalog(),
+        onRefresh: () async {
+          await state.loadCatalog();
+          if (!context.mounted) return;
+          if (state.catalogError != null) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.catalogError!)));
+          }
+        },
         child: state.isLoadingCatalog && categories.isEmpty
             ? ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
